@@ -1,0 +1,156 @@
+﻿@page "/MovieSelection"
+
+@rendermode InteractiveServer
+@using System.ComponentModel.DataAnnotations
+@using CinemaApp.Models
+@using CinemaApp.Services
+
+<style>
+    body {
+        background-color: #353634;
+        height: 100vh;
+        width: 100vw;
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+        overflow-x: hidden;
+    }
+
+    .auditorium {
+        display: flex;
+        flex-direction: column;
+        margin: 20px;
+        justify-content: center;
+        align-items: center;
+        flex: 2;
+        height: 100%;
+        width: 100%;
+    }
+
+    .screen {
+        background-color: #ebe9df;
+        border: none;
+        border-radius: 0px 0px 50% 50%;
+        width: 50%;
+        height: 7%;
+        margin-bottom: 100px;
+        color: black;
+        font-weight: bold;
+    }
+
+    .publicSpace {
+        display: flex;
+        gap: 3px;
+        align-items: center;
+    }
+
+    .publicSpace > button {
+        color: rgba(1.9, 255, 255, 0.6);
+        font-size: 9px;
+        width: 20px;
+        height: 20px;
+        border-radius: 5px;
+        background-color: #20414f;
+        text-align: center;
+        margin: 5px;
+    }
+
+    .empty {
+        flex: 1;
+    }
+
+</style>
+
+<h3>MovieSelection</h3>
+<div class="empty"></div>
+<div class="auditorium">
+    <div class="screen">
+        <label>PLATNO</label>
+    </div>
+    <div class="publicSpace">
+        @seatsZone1
+    </div><div class="publicSpace">
+        @seatsZone2
+    </div><div class="publicSpace">
+        @seatsZone3
+    </div><div class="publicSpace">
+        @seatsZone4
+    </div><div class="publicSpace">
+        @seatsZone5
+    </div>
+</div>
+<div class="empty"></div>
+
+@code {
+    [Inject] SeatService seatService { get; set; }
+
+    private RenderFragment seatsZone1;
+    private RenderFragment seatsZone2;
+    private RenderFragment seatsZone3;
+    private RenderFragment seatsZone4;
+    private RenderFragment seatsZone5;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        FillSeats();
+    }
+
+    public void FillSeats()
+    {
+        var seats = seatService.GetSeats();
+        int seq = 0;
+        foreach(var seat in seats)
+        {
+            switch(seat.Row)
+            {
+                case 'A':
+                    
+                    seatsZone1 += builder =>
+                    {
+                        builder.OpenElement(seq++, "button");
+                        builder.AddAttribute(seq++, "class", "btn button_zone");
+                        builder.AddContent(seq++, seat.Row.ToString() + seat.Position.ToString());
+                        builder.CloseElement();
+                    };
+                    continue;
+                case 'B':
+                    seatsZone2 += builder =>
+                        {
+                            builder.OpenElement(seq++, "button");
+                            builder.AddAttribute(seq++, "class", "btn button_zone");
+                            builder.AddContent(seq++, seat.Row.ToString() + seat.Position.ToString());
+                            builder.CloseElement();
+                        };
+                    continue;
+                case 'C':
+                    seatsZone3 += builder =>
+                        {
+                            builder.OpenElement(seq++, "button");
+                            builder.AddAttribute(seq++, "class", "btn button_zone");
+                            builder.AddContent(seq++, seat.Row.ToString() + seat.Position.ToString());
+                            builder.CloseElement();
+                        };
+                    continue;
+                case 'D':
+                    seatsZone4 += builder =>
+                        {
+                            builder.OpenElement(seq++, "button");
+                            builder.AddAttribute(seq++, "class", "btn button_zone");
+                            builder.AddContent(seq++, seat.Row.ToString() + seat.Position.ToString());
+                            builder.CloseElement();
+                        };
+                    continue;
+                case 'E':
+                    seatsZone5 += builder =>
+                        {
+                            builder.OpenElement(seq++, "button");
+                            builder.AddAttribute(seq++, "class", "btn button_zone");
+                            builder.AddContent(seq++, seat.Row.ToString() + seat.Position.ToString());
+                            builder.CloseElement();
+                        };
+                    continue;
+            }
+        }
+    }
+}
