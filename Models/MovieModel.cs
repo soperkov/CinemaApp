@@ -8,5 +8,7 @@ namespace CinemaApp.Models
         public string Title { get; set; }
         public DateTime StartDate { get; set; }
         public int TotalSeats { get; set; }
+        public double Price { get; set; }
+
     }
 }

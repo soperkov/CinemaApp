@@ -91,6 +91,11 @@ namespace CinemaApp.Services
             return seatName;
         }
 
+        public int GetSeatId (char row, int position)
+        {
+            return _context.Seats.FirstOrDefault(i => i.Row == row && i.Position == position).Id;
+        }
+
         public List<SeatsModel> GetSeats()
         {
             return _context.Seats.ToList();

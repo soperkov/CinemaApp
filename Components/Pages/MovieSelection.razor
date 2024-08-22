@@ -16,15 +16,41 @@
         overflow-x: hidden;
     }
 
+    .header {
+        display: flex;
+        align-items: center;
+    }
+
+    h3 {
+        margin: 20px;
+        color: palegoldenrod;
+        font-size: larger;
+        flex: 9;
+    }
+
+    .logoutButton {
+        flex: 0.5;
+        background-color: darkgoldenrod;
+        border-radius: 5px;
+        border: 2px solid #423e1b;
+        color: black;
+        margin: 20px 20px 20px 80px;
+    }
+
+    .logoutButton:hover {
+        background-color: palegoldenrod;
+    }
+
     .auditorium {
         display: flex;
         flex-direction: column;
-        margin: 20px;
         justify-content: center;
         align-items: center;
         flex: 2;
         height: 100%;
         width: 100%;
+        margin-top: 80px;
+        margin-bottom: 50px;
     }
 
     .screen {
@@ -33,7 +59,7 @@
         border-radius: 0px 0px 50% 50%;
         width: 50%;
         height: 7%;
-        margin-bottom: 100px;
+        margin-bottom: 80px;
         color: black;
         font-weight: bold;
     }
@@ -47,8 +73,8 @@
     .publicSpace > button {
         color: rgba(1.9, 255, 255, 0.6);
         font-size: 9px;
-        width: 20px;
-        height: 20px;
+        width: 40px;
+        height: 40px;
         border-radius: 5px;
         background-color: #20414f;
         text-align: center;
@@ -59,10 +85,82 @@
         flex: 1;
     }
 
+    .movieChoice {
+        flex: 1;
+        display: flex;
+        margin: 25px;
+        color: whitesmoke;
+    }
+
+    .pictures {
+        display: flex;
+        flex: 1;
+        cursor: pointer;
+    }
+
+    .pictures > img {
+        height: 300px;
+        width:auto;
+        margin: 20px;
+    }
+
+    .movie {
+        align-content: center;
+    }
+
+    .inline-p {
+        display: inline;
+    }
+
+    .text-bold {
+        font-weight: bold;
+    }
+
+    .clicked {
+        background-color: #555753 !important;
+    }
+
+    .button_zone_unclickable {
+        background-color: rgba(240, 1.9, 40, 0.6) !important;
+        cursor: default !important;
+    }
+
 </style>
 
-<h3>MovieSelection</h3>
-<div class="empty"></div>
+<Modal @ref="modal" IsServiceModal ="true"/>
+<div class="header">
+    <h3>AKTUALNI FILMOVI</h3>
+    <button class="btn logoutButton" onclick=@Logout>Odjava</button>
+</div>
+<div class="movieChoice">
+    <div class="pictures @(isSelected1 ? "clicked" : "")" @onclick="() => ToggleClass(1)">
+        <img src="Images/deadpool-wolverine.jpg" alt="Deadpool"/>
+        <div class="movie">
+            <h5>Deadpool & Wolverine</h5><br />
+            <p class="text-bold inline-p">Žanr: </p><p class="inline-p"></p>Science-Fiction<br />
+            <p class="text-bold inline-p">Trajanje: </p><p class="inline-p"></p>127 minuta<br />
+            <p class="text-bold inline-p">Cijena: </p><p class="inline-p"></p>@movieService.GetPrice("Deadpool & Wolverine") €<br />
+        </div>
+    </div>
+    <div class="pictures @(isSelected2 ? "clicked" : "")" @onclick="() => ToggleClass(2)">
+       <img src="Images/alien-romulus.jpg" alt="Alien" />
+        <div class="movie">
+            <h5>Alien: Romulus</h5><br />
+            <p class="text-bold inline-p">Žanr: </p><p class="inline-p"></p>Science-Fiction<br />
+            <p class="text-bold inline-p">Trajanje: </p><p class="inline-p"></p>119 minuta<br />
+            <p class="text-bold inline-p">Cijena: </p><p class="inline-p">@movieService.GetPrice("Alien: Romulus") €</p><br />
+       </div>
+    </div>
+    <div class="pictures @(isSelected3 ? "clicked" : "")" @onclick="() => ToggleClass(3)">
+        <img src="Images/banda-cupavih-repova.jpg" alt="Banda" />
+        <div class="movie">
+            <h5>Banda čupavih repova 2</h5><br />
+            <p class="text-bold inline-p">Žanr: </p><p class="inline-p">Animirani</p><br />
+            <p class="text-bold inline-p">Trajanje: </p><p class="inline-p">80 minuta</p><br />
+            <p class="text-bold inline-p">Cijena: </p><p class="inline-p"></p>@movieService.GetPrice("Banda čupavih repova 2") €<br />
+        </div>
+    </div>
+</div>
 <div class="auditorium">
     <div class="screen">
         <label>PLATNO</label>
@@ -82,13 +180,31 @@
 <div class="empty"></div>
 
 @code {
-    [Inject] SeatService seatService { get; set; }
+    [Inject] private NavigationManager NavManager { get; set; }
+    [Inject] private ModalService ModalService { get; set; } = default!;
+    [Inject] private SeatService seatService { get; set; }
+    [Inject] private MovieService movieService { get; set; }
+    [Inject] private ReservationService reservationService { get; set; }
+    [Inject] private LoggedInUserModel LoggedInUser { get; set; }
 
+    private Modal modal = default!;
+    private ModalOptions current { get; set; }
+    private MovieModel selectedMovie = new();
     private RenderFragment seatsZone1;
     private RenderFragment seatsZone2;
     private RenderFragment seatsZone3;
     private RenderFragment seatsZone4;
     private RenderFragment seatsZone5;
+    private bool isSelected1 = false;
+    private bool isSelected2 = false;
+    private bool isSelected3 = false;
+    private int movieSelected = 0;
+    private Dictionary<int, string> Movies = new Dictionary<int, string>
+    {
+        {1, "Deadpool & Wolverine" },
+        {2, "Alien: Romulus"},
+        {3, "Banda čupavih repova 2"}
+    };
 
     protected override void OnInitialized()
     {
@@ -96,61 +212,230 @@
         FillSeats();
     }
 
+    public void ToggleClass(int boxNumber)
+    {
+        isSelected1 = isSelected2 = isSelected3 = false;
+
+        switch (boxNumber)
+        {
+            case 1:
+                isSelected1 = true;
+                movieSelected = 1;
+                selectedMovie = movieService.GetMovieModel(Movies[movieSelected]);
+                FillSeats();
+                break;
+            case 2:
+                isSelected2 = true;
+                movieSelected = 2;
+                selectedMovie = movieService.GetMovieModel(Movies[movieSelected]);
+                FillSeats();
+                break;
+            case 3:
+                isSelected3 = true;
+                movieSelected = 3;
+                selectedMovie = movieService.GetMovieModel(Movies[movieSelected]);
+                FillSeats();
+                break;
+        }
+    }
+
+    public void ClearZones()
+    {
+        seatsZone1 = null;
+        seatsZone2 = null;
+        seatsZone3 = null;
+        seatsZone4 = null;
+        seatsZone5 = null;
+    }
+
     public void FillSeats()
     {
+        if (seatsZone1 != null)
+        {
+            ClearZones();  
+        }
         var seats = seatService.GetSeats();
         int seq = 0;
         foreach(var seat in seats)
         {
-            switch(seat.Row)
+            if (reservationService.IsReserved(seat.Id, selectedMovie != null ? selectedMovie.Id : 0))
             {
-                case 'A':
-                    
-                    seatsZone1 += builder =>
-                    {
-                        builder.OpenElement(seq++, "button");
-                        builder.AddAttribute(seq++, "class", "btn button_zone");
-                        builder.AddContent(seq++, seat.Row.ToString() + seat.Position.ToString());
-                        builder.CloseElement();
-                    };
-                    continue;
-                case 'B':
-                    seatsZone2 += builder =>
-                        {
-                            builder.OpenElement(seq++, "button");
-                            builder.AddAttribute(seq++, "class", "btn button_zone");
-                            builder.AddContent(seq++, seat.Row.ToString() + seat.Position.ToString());
-                            builder.CloseElement();
-                        };
-                    continue;
-                case 'C':
-                    seatsZone3 += builder =>
-                        {
-                            builder.OpenElement(seq++, "button");
-                            builder.AddAttribute(seq++, "class", "btn button_zone");
-                            builder.AddContent(seq++, seat.Row.ToString() + seat.Position.ToString());
-                            builder.CloseElement();
-                        };
-                    continue;
-                case 'D':
-                    seatsZone4 += builder =>
-                        {
-                            builder.OpenElement(seq++, "button");
-                            builder.AddAttribute(seq++, "class", "btn button_zone");
-                            builder.AddContent(seq++, seat.Row.ToString() + seat.Position.ToString());
-                            builder.CloseElement();
-                        };
-                    continue;
-                case 'E':
-                    seatsZone5 += builder =>
-                        {
-                            builder.OpenElement(seq++, "button");
-                            builder.AddAttribute(seq++, "class", "btn button_zone");
-                            builder.AddContent(seq++, seat.Row.ToString() + seat.Position.ToString());
-                            builder.CloseElement();
-                        };
-                    continue;
+                switch (seat.Row)
+                {
+                    case 'A':
+
+                        seatsZone1 += builder =>
+                            {
+                                builder.OpenElement(seq++, "button");
+                                builder.AddAttribute(seq++, "class", "btn button_zone_unclickable");
+                                builder.AddContent(seq++, "X");
+                                builder.CloseElement();
+                            };
+                        continue;
+                    case 'B':
+                        seatsZone2 += builder =>
+                            {
+                                builder.OpenElement(seq++, "button");
+                                builder.AddAttribute(seq++, "class", "btn button_zone_unclickable");
+                                builder.AddContent(seq++, "X");
+                                builder.CloseElement();
+                            };
+                        continue;
+                    case 'C':
+                        seatsZone3 += builder =>
+                            {
+                                builder.OpenElement(seq++, "button");
+                                builder.AddAttribute(seq++, "class", "btn button_zone_unclickable");
+                                builder.AddContent(seq++, "X");
+                                builder.CloseElement();
+                            };
+                        continue;
+                    case 'D':
+                        seatsZone4 += builder =>
+                            {
+                                builder.OpenElement(seq++, "button");
+                                builder.AddAttribute(seq++, "class", "btn button_zone_unclickable");
+                                builder.AddContent(seq++, "X");
+                                builder.CloseElement();
+                            };
+                        continue;
+                    case 'E':
+                        seatsZone5 += builder =>
+                            {
+                                builder.OpenElement(seq++, "button");
+                                builder.AddAttribute(seq++, "class", "btn button_zone_unclickable");
+                                builder.AddContent(seq++, "X");
+                                builder.CloseElement();
+                            };
+                        continue;
+                }
             }
+            else
+            {
+                switch (seat.Row)
+                {
+                    case 'A':
+
+                        seatsZone1 += builder =>
+                            {
+                                builder.OpenElement(seq++, "button");
+                                builder.AddAttribute(seq++, "class", "btn button_zone");
+                                builder.AddAttribute(seq++, "onclick", EventCallback.Factory.Create(this, async () => await ShowModal(ModalType.Info, movieSelected, seat.Row.ToString(), seat.Position.ToString())));
+                                builder.AddContent(seq++, seat.Row.ToString() + seat.Position.ToString());
+                                builder.CloseElement();
+                            };
+                        continue;
+                    case 'B':
+                        seatsZone2 += builder =>
+                            {
+                                builder.OpenElement(seq++, "button");
+                                builder.AddAttribute(seq++, "class", "btn button_zone");
+                                builder.AddAttribute(seq++, "onclick", EventCallback.Factory.Create(this, async () => await ShowModal(ModalType.Info, movieSelected, seat.Row.ToString(), seat.Position.ToString())));
+                                builder.AddContent(seq++, seat.Row.ToString() + seat.Position.ToString());
+                                builder.CloseElement();
+                            };
+                        continue;
+                    case 'C':
+                        seatsZone3 += builder =>
+                            {
+                                builder.OpenElement(seq++, "button");
+                                builder.AddAttribute(seq++, "class", "btn button_zone");
+                                builder.AddAttribute(seq++, "onclick", EventCallback.Factory.Create(this, async () => await ShowModal(ModalType.Info, movieSelected, seat.Row.ToString(), seat.Position.ToString())));
+                                builder.AddContent(seq++, seat.Row.ToString() + seat.Position.ToString());
+                                builder.CloseElement();
+                            };
+                        continue;
+                    case 'D':
+                        seatsZone4 += builder =>
+                            {
+                                builder.OpenElement(seq++, "button");
+                                builder.AddAttribute(seq++, "class", "btn button_zone");
+                                builder.AddAttribute(seq++, "onclick", EventCallback.Factory.Create(this, async () => await ShowModal(ModalType.Info, movieSelected, seat.Row.ToString(), seat.Position.ToString())));
+                                builder.AddContent(seq++, seat.Row.ToString() + seat.Position.ToString());
+                                builder.CloseElement();
+                            };
+                        continue;
+                    case 'E':
+                        seatsZone5 += builder =>
+                            {
+                                builder.OpenElement(seq++, "button");
+                                builder.AddAttribute(seq++, "class", "btn button_zone");
+                                builder.AddAttribute(seq++, "onclick", EventCallback.Factory.Create(this, async () => await ShowModal(ModalType.Info, movieSelected, seat.Row.ToString(), seat.Position.ToString())));
+                                builder.AddContent(seq++, seat.Row.ToString() + seat.Position.ToString());
+                                builder.CloseElement();
+                            };
+                        continue;
+                }
+            }            
         }
+    }
+
+    private async Task ShowModal(ModalType modal, int selection, string row, string position)
+    {
+        if (movieSelected == 0)
+        {
+            await ShowErrorModal(ModalType.Danger);
+        }
+        else
+        {
+            selectedMovie = movieService.GetMovieModel(Movies[selection]);
+            await ShowReservationModal(ModalType.Dark, row, position);
+        }
+        FillSeats();
+        StateHasChanged();
+    }
+
+    private async Task ShowReservationModal(ModalType type, string row, string position)
+    {
+        var reservation = new ReservationModel
+            {
+                UseerId = LoggedInUser.Id,
+                MovieId = selectedMovie.Id,
+                SeatId = seatService.GetSeatId(char.Parse(row), int.Parse(position))
+            };
+
+        reservationService.ReserveSeat(reservation);
+
+        current = new ModalOptions
+            {
+                Title = "Uspješna rezervacija",
+                Message = $"Rezervirali ste sjedalo {row}{position} za film {selectedMovie.Title} po cijeni od {selectedMovie.Price} €.",
+                Type = type,
+                FooterButtonText = "Zatvori",
+                OnFooterButtonClick = EventCallback.Factory.Create(this, async () => await OnCloseModal()),
+                IsVerticallyCentered = true
+            };
+        await ModalService.ShowAsync(current);
+    }
+
+    private async Task ShowErrorModal(ModalType type)
+    {
+        current = new ModalOptions
+            {
+                Title = "Greška",
+                Message = "Niste odabrali film.",
+                Type = type,
+                FooterButtonText = "Zatvori",
+                OnFooterButtonClick = EventCallback.Factory.Create(this, async () => await OnCloseModal()),
+                IsVerticallyCentered = true
+            };
+        await ModalService.ShowAsync(current);
+    }
+
+    private async Task OnCloseModal()
+    {
+        await modal?.HideAsync();
+    }
+
+
+    public class ModalOptions : ModalOption
+    {
+        public EventCallback OnFooterButtonClick { get; set; }
+    }
+
+    public void Logout()
+    {
+        NavManager.NavigateTo("/");
+        LoggedInUser.Reset();
     }
 }

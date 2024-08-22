@@ -22,6 +22,7 @@ namespace CinemaApp
             builder.Services.AddScoped<UserService>();
             builder.Services.AddScoped<SeatService>();
             builder.Services.AddScoped<MovieService>();
+            builder.Services.AddScoped<ReservationService>();
 
             builder.Services.AddSingleton<LoggedInUserModel>();
 
