@@ -6,6 +6,7 @@
 
 <style>
     body {
+        background-color: #353634;
         height: 100vh;
         width: 100vw;
         overflow-y: hidden;
@@ -18,28 +19,34 @@
     }
 
     h1 {
-        color: black;
+        color: palegoldenrod;
         font-size: 12px;
         font-weight: bold;
     }
 
     label {
         font-size: 120%;
-        color:black;
+        color: #80772b;
+        font-weight: bold;
     }
 
     button {
         margin: 15px;
     }
 
-    .container { 
-        text-align: center;
-        padding: 20px;
-        border: 5px solid rgba(1.9, 1.9, 1.9, 0.5);
-        border-radius: 10px;
-        background-color: #34c0eb;
+    .container {
         display: flex;
         flex-direction: column;
+    }
+
+    .form-container { 
+        text-align: center;
+        padding: 20px;
+        border: 2px solid #423e1b;
+        border-radius: 10px;
+        background-color: #2b2b2a;
+        display: flex;
+        flex-direction: row;
     }
 
     .form_class {
@@ -52,10 +59,13 @@
     }
 
     .or_bor {
-        background-color: rgba(1.9, 1.9, 1.9, 0.5);
-        height: 3px;
+        background-color: rgba(1.9, 1.9, 1.9, 0.1);
+        height: 0px;
+        border: 5px 0 0 0;
+        border: dashed rgba(2.2, 2.2, 2.2, 0.1); 
         border-radius: 10px;
-        margin: 0px 10px;
+        margin: 0px;
+        padding: 0px;
     }
 
     .title {
@@ -63,65 +73,86 @@
         margin-bottom: 20px;
     }
 
+    .btn-custom {
+        background-color: darkgoldenrod;
+        border-radius: 5px;
+        border: 2px solid #423e1b;
+        color: black;
+        margin: 20px 20px 20px 20px;
+        width: 200px;
+    }
+
+    .btn-custom:hover {
+        background-color: palegoldenrod;
+        border-radius: 7px;
+        color: black;
+        font-weight: 500;
+        border: 4px solid #423e1b;
+        margin: 18px 18px 18px 18px;
+    }
+
 </style>
 
 <PageTitle>Moviestar Cinema</PageTitle>
-<h1 class="title">Moviestar Cinema</h1>
+<div class="header-title">
+    <h1 class="title">BLAZORSTAR CINEMA</h1>
+</div>
 <div class="container">
-    <div class="form_class">
+    <div class="fiorm-container">
+        <div class="form_class">
 
-        <div class="login">
-            <h1 class="display-6 font-raleway">Prijava</h1>
-            <EditForm Model="this" OnValidSubmit="LogIn" FormName="LoginForm">
-                <div>
-                    <label for="name">E-mail:</label>
-                    <InputText id="email" class="form-control" @bind-Value="email" />
-                </div>
-                <div>
-                    <label for="password" class="mt-2">Lozinka:</label>
-                    <InputText id="password" type="password" class="form-control" @bind-Value="loginPassword" />
-                </div>
-                <div>
-                    <button type="submit" class="btn btn-primary btn-custom">Prijava</button>
-                </div>
-            </EditForm>
-        </div>
-        <div class="or_bor"></div>
+            <div class="login">
+                <h1 class="display-6 font-raleway">Prijava</h1>
+                <EditForm Model="this" OnValidSubmit="LogIn" FormName="LoginForm">
+                    <div>
+                        <label for="name">E-mail:</label>
+                        <InputText id="email" class="form-control" @bind-Value="email" />
+                    </div>
+                    <div>
+                        <label for="password" class="mt-2">Lozinka:</label>
+                        <InputText id="password" type="password" class="form-control" @bind-Value="loginPassword" />
+                    </div>
+                    <div>
+                        <button type="submit" class="btn btn-primary btn-custom">Prijava</button>
+                    </div>
+                </EditForm>
+            </div>
+            <div class="or_bor"></div>
 
-        <div class="register">
-            <h1 class="display-6 font-raleway">Registracija</h1>
-            <EditForm Model="registrationModel" OnValidSubmit="Register" FormName="RegistrationForm">
-                <DataAnnotationsValidator />
-                <div>
-                    <label for="name">Ime:</label>
-                    <InputText id="name" class="form-control" @bind-Value="registrationModel.Name" />
-                    <ValidationMessage For="() => registrationModel.Name" />
-                </div>
-                <div>
-                    <label for="lastname">Prezime:</label>
-                    <InputText id="name" class="form-control" @bind-Value="registrationModel.LastName" />
-                    <ValidationMessage For="() => registrationModel.LastName" />
-                </div>
-                <div>
-                    <label for="email">Email:</label>
-                    <InputText id="email" type="email" class="form-control" @bind-Value="registrationModel.Email" />
-                    <ValidationMessage For="() => registrationModel.Email" />
-                </div>
-                <div>
-                    <label for="password" class="mt-2">Lozinka:</label>
-                    <InputText id="password" type="password" class="form-control" @bind-Value="registrationModel.Password" />
-                    <ValidationMessage For="() => registrationModel.Password" />
-                </div>
-                <div>
-                    <label for="passwordConfirm" class="mt-2">Ponovljena lozinka:</label>
-                    <InputText id="passwordConfirm" type="password" class="form-control" @bind-Value="registrationModel.ConfirmPassword" />
-                    <ValidationMessage For="() => registrationModel.ConfirmPassword" />
-                </div>
-                <div>
-                    <button type="submit" class="btn btn-primary btn-custom">Registriraj se</button>
-                </div>
-            </EditForm>
-        </div>
+            <div class="register">
+                <h1 class="display-6 font-raleway">Registracija</h1>
+                <EditForm Model="registrationModel" OnValidSubmit="Register" FormName="RegistrationForm">
+                    <DataAnnotationsValidator />
+                    <div>
+                        <label for="name">Ime:</label>
+                        <InputText id="name" class="form-control" @bind-Value="registrationModel.Name" />
+                        <ValidationMessage For="() => registrationModel.Name" />
+                    </div>
+                    <div>
+                        <label for="lastname">Prezime:</label>
+                        <InputText id="name" class="form-control" @bind-Value="registrationModel.LastName" />
+                        <ValidationMessage For="() => registrationModel.LastName" />
+                    </div>
+                    <div>
+                        <label for="email">Email:</label>
+                        <InputText id="email" type="email" class="form-control" @bind-Value="registrationModel.Email" />
+                        <ValidationMessage For="() => registrationModel.Email" />
+                    </div>
+                    <div>
+                        <label for="password" class="mt-2">Lozinka:</label>
+                        <InputText id="password" type="password" class="form-control" @bind-Value="registrationModel.Password" />
+                        <ValidationMessage For="() => registrationModel.Password" />
+                    </div>
+                    <div>
+                        <label for="passwordConfirm" class="mt-2">Ponovljena lozinka:</label>
+                        <InputText id="passwordConfirm" type="password" class="form-control" @bind-Value="registrationModel.ConfirmPassword" />
+                        <ValidationMessage For="() => registrationModel.ConfirmPassword" />
+                    </div>
+                    <div>
+                        <button type="submit" class="btn btn-primary btn-custom">Registriraj se</button>
+                    </div>
+                </EditForm>
+            </div>
             
 
         @if (IsErrorMessageVisible)
@@ -130,9 +161,9 @@
                 <p style="color:red">@ErrorMessage</p>
             </div>
         }
+        </div>
     </div>
 </div>
-
 
 
 @code {
